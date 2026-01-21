@@ -2,8 +2,10 @@ name: Publish to JSR
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - master
+    paths:
+      - 'deno.json'  # Only run when deno.json changes (version bump)
 
 jobs:
   publish:
