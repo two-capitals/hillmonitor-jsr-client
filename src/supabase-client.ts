@@ -54,7 +54,7 @@ export function createServiceClient(): SupabaseClient {
  *
  * Requires environment variables:
  * - `SUPABASE_URL`
- * - `SUPABASE_PUBLISHABLE_KEY`
+ * - `SUPABASE_ANON_KEY`
  *
  * @param authHeader - The Authorization header from the request (e.g., "Bearer <token>")
  * @returns Supabase client configured with user's JWT
@@ -70,7 +70,7 @@ export function createServiceClient(): SupabaseClient {
 export function createAuthenticatedClient(authHeader: string): SupabaseClient {
   return createClient(
     Deno.env.get('SUPABASE_URL') ?? '',
-    Deno.env.get('SUPABASE_PUBLISHABLE_KEY') ?? '',
+    Deno.env.get('SUPABASE_ANON_KEY') ?? '',
     {
       global: {
         headers: { Authorization: authHeader },

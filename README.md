@@ -158,12 +158,6 @@ return errorResponse('Something went wrong', 400, corsHeaders);
 Required environment variables for Edge Functions:
 
 ```bash
-# Supabase configuration
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key   # For createServiceClient()
-SUPABASE_PUBLISHABLE_KEY=your-publishable-key     # For createAuthenticatedClient() and verifyAuth()
-
-# HillMonitor API configuration
 HILLMONITOR_API_URL=https://api.hillmonitor.ca    # Optional, defaults to this value
 HILLMONITOR_SECRET_KEY=your-secret-key            # Required for HillMonitor API requests
 ```

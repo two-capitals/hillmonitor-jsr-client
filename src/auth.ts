@@ -45,7 +45,7 @@ export interface AuthResult {
  * Verifies user authentication from a request's Authorization header.
  *
  * Uses Supabase's getClaims() for asymmetric JWT verification.
- * Requires `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` environment variables.
+ * Requires `SUPABASE_URL` and `SUPABASE_ANON_KEY` environment variables.
  *
  * @param req - The incoming request with Authorization header
  * @returns Authentication result with user data or error message
@@ -70,7 +70,7 @@ export async function verifyAuth(req: Request): Promise<AuthResult> {
 
   const supabase = createClient(
     Deno.env.get('SUPABASE_URL') ?? '',
-    Deno.env.get('SUPABASE_PUBLISHABLE_KEY') ?? ''
+    Deno.env.get('SUPABASE_ANON_KEY') ?? ''
   );
 
   const { data, error } = await supabase.auth.getClaims(token);
