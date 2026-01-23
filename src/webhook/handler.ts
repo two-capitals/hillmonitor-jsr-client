@@ -4,17 +4,15 @@
  * Creates a webhook handler that verifies signatures and routes events
  * to registered callbacks.
  *
+ * Set the `HILLMONITOR_ALLOWED_ORIGINS` environment variable to handle CORS
+ * automatically.
+ *
  * @example
  * ```typescript
- * import { serveWebhook, createCorsHandler } from "@hillmonitor/client";
+ * import { serveWebhook } from "@hillmonitor/client";
  *
- * const cors = createCorsHandler([
- *   'http://localhost:3000',
- *   'https://platform.hillmonitor.com',
- * ]);
- *
+ * // CORS handled via HILLMONITOR_ALLOWED_ORIGINS env var
  * serveWebhook({
- *   cors,
  *   onMeetingProcessed: async (meetingId, ctx) => {
  *     console.log(`Meeting ${meetingId} was processed`);
  *   },
@@ -33,6 +31,7 @@ import {
   serverErrorResponse,
 } from '../response.ts';
 import type { CorsHandler } from '../cors.ts';
+import { getDefaultCorsHandler } from '../cors.ts';
 import type { WebhookPayload } from './types.ts';
 
 /**
@@ -51,7 +50,10 @@ export interface WebhookContext {
  * Configuration for the webhook handler.
  */
 export interface WebhookConfig {
-  /** CORS handler created with createCorsHandler() */
+  /**
+   * CORS handler created with createCorsHandler().
+   * If not provided, uses HILLMONITOR_ALLOWED_ORIGINS environment variable.
+   */
   cors?: CorsHandler;
 
   /**
@@ -100,7 +102,8 @@ export interface WebhookConfig {
  * ```
  */
 export function serveWebhook(config: WebhookConfig): void {
-  const { cors, onMeetingProcessed } = config;
+  const { onMeetingProcessed } = config;
+  const cors = config.cors ?? getDefaultCorsHandler();
   const secret = config.secret ?? Deno.env.get('HILLMONITOR_WEBHOOK_SECRET');
 
   Deno.serve(async (req: Request): Promise<Response> => {

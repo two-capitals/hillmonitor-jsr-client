@@ -6,33 +6,26 @@
  * - RESTful resource handler factory
  * - Webhook handler with signature verification
  * - Authentication utilities
- * - CORS configuration
+ * - CORS configuration (automatic via env var)
  * - Response helpers
  * - Supabase client factories
  *
+ * Set the `HILLMONITOR_ALLOWED_ORIGINS` environment variable to a comma-separated
+ * list of origins to enable automatic CORS handling for all handlers.
+ *
  * @example
  * ```typescript
- * import {
- *   serveResource,
- *   createCorsHandler,
- *   verifyAuth,
- *   successResponse,
- * } from "@hillmonitor/client";
- *
- * const cors = createCorsHandler([
- *   'http://localhost:3000',
- *   'https://myapp.example.com',
- * ]);
+ * // Resource handler (CORS via HILLMONITOR_ALLOWED_ORIGINS env var)
+ * import { serveResource } from "@hillmonitor/client";
  *
  * serveResource({
  *   platformPath: '/api/v1/alerts/',
- *   cors,
  * });
  * ```
  *
  * @example
  * ```typescript
- * // Webhook handler
+ * // Webhook handler (CORS via HILLMONITOR_ALLOWED_ORIGINS env var)
  * import { serveWebhook } from "@hillmonitor/client";
  *
  * serveWebhook({
@@ -62,7 +55,7 @@ export { verifyAuth } from './src/auth.ts';
 
 // CORS types and functions
 export type { CorsHandler } from './src/cors.ts';
-export { createCorsHandler } from './src/cors.ts';
+export { createCorsHandler, getDefaultCorsHandler } from './src/cors.ts';
 
 // Platform client types and functions
 export type { PlatformRequestOptions, PlatformResponse } from './src/platform-client.ts';

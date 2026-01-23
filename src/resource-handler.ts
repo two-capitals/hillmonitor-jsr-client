@@ -4,19 +4,16 @@
  * Creates a fully-featured RESTful handler with standard CRUD operations.
  * Each edge function only needs to specify configuration.
  *
+ * Set the `HILLMONITOR_ALLOWED_ORIGINS` environment variable to handle CORS
+ * automatically for all resource handlers.
+ *
  * @example
  * ```typescript
- * import { serveResource, createCorsHandler } from "@hillmonitor/client";
+ * import { serveResource } from "@hillmonitor/client";
  *
- * const cors = createCorsHandler([
- *   'http://localhost:3000',
- *   'https://myapp.example.com',
- * ]);
- *
+ * // CORS handled via HILLMONITOR_ALLOWED_ORIGINS env var
  * serveResource({
  *   platformPath: '/api/v1/alerts/',
- *   operations: 'all',
- *   cors,
  * });
  * ```
  *
@@ -35,6 +32,7 @@ import {
   errorResponse,
 } from './response.ts';
 import type { CorsHandler } from './cors.ts';
+import { getDefaultCorsHandler } from './cors.ts';
 
 type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
 
@@ -68,8 +66,11 @@ export interface ResourceConfig {
   /** Platform API base path (e.g., '/api/v1/alerts/') */
   platformPath: string;
 
-  /** CORS handler created with createCorsHandler() */
-  cors: CorsHandler;
+  /**
+   * CORS handler created with createCorsHandler().
+   * If not provided, uses HILLMONITOR_ALLOWED_ORIGINS environment variable.
+   */
+  cors?: CorsHandler;
 
   /**
    * Enabled operations. Defaults to all for full CRUD.
@@ -228,16 +229,15 @@ function getEnabledOperations(
  *
  * @example
  * ```typescript
- * // Full CRUD resource
+ * // Full CRUD resource (uses HILLMONITOR_ALLOWED_ORIGINS env var)
  * serveResource({
  *   platformPath: '/api/v1/alerts/',
- *   cors: createCorsHandler(['http://localhost:3000']),
  * });
  * ```
  *
  * @example
  * ```typescript
- * // Read-only resource
+ * // Read-only resource with explicit CORS config
  * serveResource({
  *   platformPath: '/api/v1/meetings/',
  *   operations: 'read',
@@ -251,7 +251,6 @@ function getEnabledOperations(
  * serveResource({
  *   platformPath: '/api/v1/alerts/',
  *   operations: ['list', 'get', 'create'],
- *   cors: createCorsHandler(['http://localhost:3000']),
  *   handlers: {
  *     create: async (ctx) => {
  *       // Custom create logic
@@ -262,7 +261,15 @@ function getEnabledOperations(
  * ```
  */
 export function serveResource(config: ResourceConfig): void {
-  const { platformPath, cors, handlers: customHandlers = {} } = config;
+  const { platformPath, handlers: customHandlers = {} } = config;
+  const cors = config.cors ?? getDefaultCorsHandler();
+
+  if (!cors) {
+    throw new Error(
+      'CORS handler required: either pass `cors` option or set HILLMONITOR_ALLOWED_ORIGINS env var'
+    );
+  }
+
   const enabledOps = getEnabledOperations(config);
   const defaultHandlers = createDefaultHandlers(platformPath);
 

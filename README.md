@@ -19,25 +19,26 @@ Shared SDK for HillMonitor Supabase Edge Functions. Provides utilities for build
 - **Resource Handler** - RESTful CRUD endpoint factory
 - **Webhook Handler** - Webhook endpoint with signature verification
 - **Auth Utilities** - Supabase JWT verification
-- **CORS Handler** - Configurable CORS for Edge Functions
+- **CORS Handler** - Automatic CORS via environment variable
 - **Response Helpers** - Standardized JSON responses
 - **Supabase Clients** - Service and authenticated client factories
 
 ## Quick Start
 
+Set the `HILLMONITOR_ALLOWED_ORIGINS` environment variable to enable automatic CORS handling:
+
+```bash
+HILLMONITOR_ALLOWED_ORIGINS=http://localhost:3000,https://myapp.example.com
+```
+
 ### RESTful Resource Endpoint
 
 ```typescript
-import { serveResource, createCorsHandler } from "@hillmonitor/client";
+import { serveResource } from "@hillmonitor/client";
 
-const cors = createCorsHandler([
-  'http://localhost:3000',
-  'https://myapp.example.com',
-]);
-
+// CORS is handled automatically via HILLMONITOR_ALLOWED_ORIGINS
 serveResource({
   platformPath: '/api/v1/alerts/',
-  cors,
   operations: 'all', // or 'read', or ['list', 'get', 'create']
 });
 ```
@@ -47,6 +48,7 @@ serveResource({
 ```typescript
 import { serveWebhook } from "@hillmonitor/client";
 
+// CORS is handled automatically via HILLMONITOR_ALLOWED_ORIGINS
 serveWebhook({
   onMeetingProcessed: async (meetingId) => {
     console.log(`Meeting ${meetingId} was processed`);
@@ -59,23 +61,22 @@ serveWebhook({
 
 ```typescript
 import {
-  createCorsHandler,
+  getDefaultCorsHandler,
   verifyAuth,
   platformRequest,
   successResponse,
   unauthorizedResponse,
 } from "@hillmonitor/client";
 
-const { getCorsHeaders, handleCorsPrelight } = createCorsHandler([
-  'http://localhost:3000',
-]);
+// Uses HILLMONITOR_ALLOWED_ORIGINS env var
+const cors = getDefaultCorsHandler();
 
 Deno.serve(async (req) => {
   const origin = req.headers.get('Origin');
-  const corsHeaders = getCorsHeaders(origin);
+  const corsHeaders = cors?.getCorsHeaders(origin) ?? {};
 
-  if (req.method === 'OPTIONS') {
-    return handleCorsPrelight(origin);
+  if (req.method === 'OPTIONS' && cors) {
+    return cors.handleCorsPrelight(origin);
   }
 
   const { user, error } = await verifyAuth(req);
@@ -97,9 +98,15 @@ Deno.serve(async (req) => {
 
 ### CORS
 
-```typescript
-import { createCorsHandler } from "@hillmonitor/client";
+CORS is handled automatically when `HILLMONITOR_ALLOWED_ORIGINS` is set. For manual control:
 
+```typescript
+import { createCorsHandler, getDefaultCorsHandler } from "@hillmonitor/client";
+
+// Use the default handler (from env var)
+const cors = getDefaultCorsHandler();
+
+// Or create a custom handler
 const { getCorsHeaders, handleCorsPrelight } = createCorsHandler([
   'http://localhost:3000',
   'https://app.example.com',
@@ -170,9 +177,9 @@ return errorResponse('Something went wrong', 400, corsHeaders);
 ### Webhook Handler
 
 ```typescript
-import { serveWebhook, createCorsHandler } from "@hillmonitor/client";
+import { serveWebhook } from "@hillmonitor/client";
 
-// Basic usage - reads secret from HILLMONITOR_WEBHOOK_SECRET env var
+// Basic usage - CORS via env var, secret from HILLMONITOR_WEBHOOK_SECRET
 serveWebhook({
   onMeetingProcessed: async (meetingId, ctx) => {
     console.log(`Meeting ${meetingId} processed`);
@@ -180,9 +187,11 @@ serveWebhook({
   },
 });
 
-// With CORS and custom secret
+// With custom CORS and secret override
+import { createCorsHandler } from "@hillmonitor/client";
+
 serveWebhook({
-  cors: createCorsHandler(['https://platform.hillmonitor.com']),
+  cors: createCorsHandler(['https://custom-origin.example.com']),
   secret: 'custom-webhook-secret',
   onMeetingProcessed: async (meetingId) => {
     await processNewMeeting(meetingId);
@@ -207,6 +216,7 @@ await verifyWebhookSignature(body, signature, secret);
 Required environment variables for Edge Functions:
 
 ```bash
+HILLMONITOR_ALLOWED_ORIGINS=http://localhost:3000,https://myapp.example.com  # CORS allowed origins (comma-separated)
 HILLMONITOR_API_URL=https://api.hillmonitor.ca    # Optional, defaults to this value
 HILLMONITOR_SECRET_KEY=your-secret-key            # Required for Platform API requests
 HILLMONITOR_WEBHOOK_SECRET=your-webhook-secret    # Required for webhook signature verification
