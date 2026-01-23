@@ -129,7 +129,7 @@ export function serveWebhook(config: WebhookConfig): void {
 
       // Read and verify the payload
       const body = await req.text();
-      const signature = req.headers.get('X-Webhook-Signature');
+      const signature = req.headers.get('X-HillMonitor-Signature');
 
       try {
         await verifyWebhookSignature(body, signature, secret);
