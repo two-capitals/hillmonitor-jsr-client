@@ -4,6 +4,7 @@
  * Provides shared utilities for building HillMonitor applications:
  * - Platform API client for accessing HillMonitor data
  * - RESTful resource handler factory
+ * - Webhook handler with signature verification
  * - Authentication utilities
  * - CORS configuration
  * - Response helpers
@@ -26,6 +27,18 @@
  * serveResource({
  *   platformPath: '/api/v1/alerts/',
  *   cors,
+ * });
+ * ```
+ *
+ * @example
+ * ```typescript
+ * // Webhook handler
+ * import { serveWebhook } from "@hillmonitor/client";
+ *
+ * serveWebhook({
+ *   onMeetingProcessed: async (meetingId) => {
+ *     await triggerEmailProcessing(meetingId);
+ *   },
  * });
  * ```
  *
@@ -76,3 +89,17 @@ export {
   serverErrorResponse,
   timeoutResponse,
 } from './src/response.ts';
+
+// Webhook types
+export type {
+  WebhookPayload,
+  MeetingProcessedData,
+  WebhookEventType,
+} from './src/webhook/types.ts';
+
+// Webhook verification
+export { verifyWebhookSignature } from './src/webhook/verification.ts';
+
+// Webhook handler types and functions
+export type { WebhookConfig, WebhookContext } from './src/webhook/handler.ts';
+export { serveWebhook } from './src/webhook/handler.ts';

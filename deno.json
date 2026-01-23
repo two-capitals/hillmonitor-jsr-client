@@ -1,6 +1,6 @@
 {
   "name": "@hillmonitor/client",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "HillMonitor SDK for Supabase Edge Functions - Platform API client, auth, CORS, and response utilities",
   "exports": "./mod.ts",
   "imports": {

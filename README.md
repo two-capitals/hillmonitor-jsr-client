@@ -17,6 +17,7 @@ Shared SDK for HillMonitor Supabase Edge Functions. Provides utilities for build
 
 - **Platform API Client** - Authenticated requests to HillMonitor Platform API
 - **Resource Handler** - RESTful CRUD endpoint factory
+- **Webhook Handler** - Webhook endpoint with signature verification
 - **Auth Utilities** - Supabase JWT verification
 - **CORS Handler** - Configurable CORS for Edge Functions
 - **Response Helpers** - Standardized JSON responses
@@ -38,6 +39,19 @@ serveResource({
   platformPath: '/api/v1/alerts/',
   cors,
   operations: 'all', // or 'read', or ['list', 'get', 'create']
+});
+```
+
+### Webhook Endpoint
+
+```typescript
+import { serveWebhook } from "@hillmonitor/client";
+
+serveWebhook({
+  onMeetingProcessed: async (meetingId) => {
+    console.log(`Meeting ${meetingId} was processed`);
+    await triggerEmailProcessing(meetingId);
+  },
 });
 ```
 
@@ -153,13 +167,49 @@ return successResponse({ id: 1 }, corsHeaders);
 return errorResponse('Something went wrong', 400, corsHeaders);
 ```
 
+### Webhook Handler
+
+```typescript
+import { serveWebhook, createCorsHandler } from "@hillmonitor/client";
+
+// Basic usage - reads secret from HILLMONITOR_WEBHOOK_SECRET env var
+serveWebhook({
+  onMeetingProcessed: async (meetingId, ctx) => {
+    console.log(`Meeting ${meetingId} processed`);
+    console.log('Full payload:', ctx.payload);
+  },
+});
+
+// With CORS and custom secret
+serveWebhook({
+  cors: createCorsHandler(['https://platform.hillmonitor.com']),
+  secret: 'custom-webhook-secret',
+  onMeetingProcessed: async (meetingId) => {
+    await processNewMeeting(meetingId);
+  },
+});
+```
+
+### Webhook Signature Verification
+
+```typescript
+import { verifyWebhookSignature } from "@hillmonitor/client";
+
+const body = await req.text();
+const signature = req.headers.get('X-Webhook-Signature');
+
+// Throws if signature is invalid
+await verifyWebhookSignature(body, signature, secret);
+```
+
 ## Environment Variables
 
 Required environment variables for Edge Functions:
 
 ```bash
 HILLMONITOR_API_URL=https://api.hillmonitor.ca    # Optional, defaults to this value
-HILLMONITOR_SECRET_KEY=your-secret-key            # Required for HillMonitor API requests
+HILLMONITOR_SECRET_KEY=your-secret-key            # Required for Platform API requests
+HILLMONITOR_WEBHOOK_SECRET=your-webhook-secret    # Required for webhook signature verification
 ```
 
 ## License
