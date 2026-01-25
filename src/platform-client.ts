@@ -43,8 +43,8 @@ export interface PlatformRequestOptions {
   params?: Record<string, string | number | boolean | undefined | null>;
   /** Request body for POST/PATCH/PUT */
   body?: Record<string, unknown>;
-  /** User ID to inject into requests */
-  userId: string;
+  /** User ID to inject into requests. Required when HILLMONITOR_FILTER_BY_USER is enabled (default). */
+  userId?: string;
 }
 
 /**
@@ -71,15 +71,33 @@ export function isPlatformConfigured(): boolean {
 }
 
 /**
+ * Checks if user filtering is enabled.
+ *
+ * Controlled by `HILLMONITOR_FILTER_BY_USER` environment variable.
+ * - `true` or not set: filter by user (default)
+ * - `false`: do not filter by user
+ *
+ * @returns true if requests should be filtered by user
+ */
+function shouldFilterByUser(): boolean {
+  const envValue = Deno.env.get('HILLMONITOR_FILTER_BY_USER');
+  return envValue !== 'false';
+}
+
+/**
  * Makes an authenticated request to the Platform API.
  *
- * - Automatically adds external_user_id to query params (GET) or body (POST/PATCH/PUT)
  * - Adds Bearer authentication with HILLMONITOR_SECRET_KEY
  * - Implements request timeout (30 seconds)
+ * - Automatically adds external_user_id to query params (GET) or body (POST/PATCH/PUT)
+ *   when HILLMONITOR_FILTER_BY_USER is enabled (default)
  *
- * Requires environment variables:
+ * Environment variables:
  * - `HILLMONITOR_API_URL` (optional, defaults to 'https://api.hillmonitor.ca')
- * - `HILLMONITOR_SECRET_KEY`
+ * - `HILLMONITOR_SECRET_KEY` (required)
+ * - `HILLMONITOR_FILTER_BY_USER` (optional, defaults to 'true')
+ *   - 'true' or not set: injects external_user_id into requests (default)
+ *   - 'false': does not inject external_user_id, all users see all data
  *
  * @param options - Request configuration
  * @returns Response data and status
@@ -109,6 +127,7 @@ export async function platformRequest<T = unknown>(
   const HILLMONITOR_SECRET_KEY = Deno.env.get('HILLMONITOR_SECRET_KEY');
 
   const { path, method, params = {}, body, userId } = options;
+  const filterByUser = shouldFilterByUser();
 
   // Build query string
   const searchParams = new URLSearchParams();
@@ -120,8 +139,8 @@ export async function platformRequest<T = unknown>(
     }
   });
 
-  // Add external_user_id for GET requests
-  if (method === 'GET') {
+  // Add external_user_id for GET requests (only if filtering by user)
+  if (method === 'GET' && filterByUser && userId) {
     searchParams.set('external_user_id', userId);
   }
 
@@ -129,9 +148,9 @@ export async function platformRequest<T = unknown>(
   const fullPath = queryString ? `${path}?${queryString}` : path;
   const url = `${HILLMONITOR_API_URL}${fullPath}`;
 
-  // Prepare request body with user ID for mutations
+  // Prepare request body with user ID for mutations (only if filtering by user)
   let requestBody = body;
-  if ((method === 'POST' || method === 'PATCH' || method === 'PUT') && body) {
+  if ((method === 'POST' || method === 'PATCH' || method === 'PUT') && body && filterByUser && userId) {
     requestBody = {
       ...body,
       external_user_id: userId,

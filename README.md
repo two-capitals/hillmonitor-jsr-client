@@ -220,7 +220,22 @@ HILLMONITOR_ALLOWED_ORIGINS=http://localhost:3000,https://myapp.example.com  # C
 HILLMONITOR_API_URL=https://api.hillmonitor.ca    # Optional, defaults to this value
 HILLMONITOR_SECRET_KEY=your-secret-key            # Required for Platform API requests
 HILLMONITOR_WEBHOOK_SECRET=your-webhook-secret    # Required for webhook signature verification
+HILLMONITOR_FILTER_BY_USER=true                   # Optional, defaults to true
 ```
+
+### User Filtering
+
+By default, `platformRequest` automatically injects `external_user_id` into all requests:
+- GET requests: added as query parameter
+- POST/PATCH/PUT requests: added to request body
+
+This ensures users only see their own data. To disable this behavior (all users see all data), set:
+
+```bash
+HILLMONITOR_FILTER_BY_USER=false
+```
+
+When filtering is disabled, the `userId` parameter becomes optional.
 
 ## License
 
