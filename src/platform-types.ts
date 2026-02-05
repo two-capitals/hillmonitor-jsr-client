@@ -37,6 +37,8 @@ export interface Segment {
   endTime: string;
   /** Full transcript text of the segment */
   transcript: string;
+  /** English translation of the transcript, if available */
+  transcriptEn?: string;
   /** URL to a thumbnail image for this segment */
   thumbnailUrl: string;
 }
