@@ -87,6 +87,8 @@ export interface AlertMatch {
   phrase: string;
   /** External user ID who owns this alert */
   externalUserId: string;
+  /** The source type of this match (e.g., "ca_house_of_representatives") */
+  source: string;
   /** The actual text that matched the phrase */
   matchedText: string;
   /** Character position where the match starts in the segment */
