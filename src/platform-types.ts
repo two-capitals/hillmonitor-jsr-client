@@ -118,3 +118,75 @@ export interface MatchGroup {
   /** All matches for this phrase */
   matches: AlertMatch[];
 }
+
+/**
+ * A Canada Gazette edition.
+ */
+export interface GazetteEdition {
+  /** Unique identifier */
+  id: number;
+  /** Date of the edition (ISO date string) */
+  editionDate: string;
+  /** Volume number */
+  volume: number;
+  /** Issue number within the volume */
+  issueNumber: number;
+  /** URL to the edition on the Canada Gazette website */
+  editionUrl: string;
+}
+
+/**
+ * An item published in the Canada Gazette.
+ */
+export interface GazetteItem {
+  /** Unique identifier */
+  id: number;
+  /** UUID identifier from the gazette system */
+  gazetteId: string;
+  /** Full text content of the gazette item */
+  contentText: string;
+  /** The edition this item belongs to */
+  edition: GazetteEdition;
+  /** Title of the gazette item */
+  itemTitle: string;
+  /** URL to the item on the Canada Gazette website */
+  itemUrl: string;
+  /** Type of section (e.g., "Notices", "Regulations") */
+  sectionType: string;
+  /** Department or agency that published the item */
+  departmentAgency: string;
+}
+
+/**
+ * An alert match found in a Canada Gazette item.
+ */
+export interface GazetteAlertMatch {
+  /** Unique identifier */
+  id: number;
+  /** ID of the alert that triggered this match */
+  alert: number;
+  /** The search phrase that was matched */
+  phrase: string;
+  /** External user ID who owns this alert */
+  externalUserId: string;
+  /** The source type of this match */
+  source: 'canada_gazette';
+  /** The actual text that matched the phrase */
+  matchedText: string;
+  /** Character position where the match starts */
+  startPosition: number;
+  /** Character position where the match ends */
+  endPosition: number;
+  /** ISO timestamp when the match was created */
+  createdAt: string;
+  /** The gazette item containing this match */
+  gazetteItem: GazetteItem;
+}
+
+/**
+ * Full gazette edition data including all alert matches.
+ */
+export interface FullGazetteEditionResponse extends GazetteEdition {
+  /** All alert matches found in this gazette edition */
+  alertMatches: GazetteAlertMatch[];
+}

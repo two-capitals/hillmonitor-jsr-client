@@ -32,7 +32,7 @@ import {
 } from '../response.ts';
 import type { CorsHandler } from '../cors.ts';
 import { getDefaultCorsHandler } from '../cors.ts';
-import type { WebhookPayload } from './types.ts';
+import type { WebhookPayload, GazetteProcessedData } from './types.ts';
 
 /**
  * Context passed to webhook event handlers.
@@ -69,6 +69,14 @@ export interface WebhookConfig {
    * @param context - The webhook context
    */
   onMeetingProcessed?: (meetingId: number, context: WebhookContext) => Promise<void>;
+
+  /**
+   * Handler for `gazette.processed` events.
+   *
+   * @param data - The gazette processing data including edition IDs
+   * @param context - The webhook context
+   */
+  onGazetteProcessed?: (data: GazetteProcessedData, context: WebhookContext) => Promise<void>;
 }
 
 /**
@@ -102,7 +110,7 @@ export interface WebhookConfig {
  * ```
  */
 export function serveWebhook(config: WebhookConfig): void {
-  const { onMeetingProcessed } = config;
+  const { onMeetingProcessed, onGazetteProcessed } = config;
   const cors = config.cors ?? getDefaultCorsHandler();
   const secret = config.secret ?? Deno.env.get('HILLMONITOR_WEBHOOK_SECRET');
 
@@ -159,8 +167,13 @@ export function serveWebhook(config: WebhookConfig): void {
             await onMeetingProcessed(payload.data.meeting_id, ctx);
           }
           break;
+        case 'gazette.processed':
+          if (onGazetteProcessed) {
+            await onGazetteProcessed(payload.data, ctx);
+          }
+          break;
         default:
-          console.warn(`Unhandled webhook event: ${payload.event}`);
+          console.warn(`Unhandled webhook event: ${(payload as { event: string }).event}`);
       }
 
       return successResponse({ received: true }, corsHeaders);

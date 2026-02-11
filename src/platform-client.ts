@@ -27,7 +27,7 @@
  * @module
  */
 
-import type { FullMeetingResponse } from './platform-types.ts';
+import type { FullMeetingResponse, FullGazetteEditionResponse } from './platform-types.ts';
 
 const REQUEST_TIMEOUT_MS = 30000;
 
@@ -250,6 +250,67 @@ export async function getFullMeeting(
     }
 
     const data: FullMeetingResponse = await response.json();
+    return { data, status: response.status };
+  } catch (error) {
+    clearTimeout(timeoutId);
+
+    if ((error as Error).name === 'AbortError') {
+      return { data: null, status: 504, error: 'Request timeout' };
+    }
+
+    throw error;
+  }
+}
+
+/**
+ * Fetches gazette edition data with all alert matches.
+ *
+ * This is an organization-level request that does not filter by user.
+ * Used for generating email notifications and reports.
+ *
+ * @param editionId - The gazette edition ID to fetch
+ * @returns Full gazette edition data including all alert matches
+ *
+ * @example
+ * ```typescript
+ * const { data, status, error } = await getGazetteEditionAlertMatches(42);
+ * if (data) {
+ *   console.log(`Edition: Vol. ${data.volume}, Issue ${data.issueNumber}`);
+ *   console.log(`Matches: ${data.alertMatches.length}`);
+ * }
+ * ```
+ */
+export async function getGazetteEditionAlertMatches(
+  editionId: number
+): Promise<PlatformResponse<FullGazetteEditionResponse>> {
+  const HILLMONITOR_API_URL = Deno.env.get('HILLMONITOR_API_URL') || 'https://api.hillmonitor.ca';
+  const HILLMONITOR_SECRET_KEY = Deno.env.get('HILLMONITOR_SECRET_KEY');
+
+  const url = `${HILLMONITOR_API_URL}/api/v1/gazette-editions/${editionId}/alert-matches/`;
+
+  const headers = new Headers();
+  headers.set('Authorization', `Bearer ${HILLMONITOR_SECRET_KEY}`);
+  headers.set('Content-Type', 'application/json');
+  headers.set('Accept', 'application/json');
+
+  console.log(`[platform-client] GET /api/v1/gazette-editions/${editionId}/alert-matches/`);
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers,
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      return { data: null, status: response.status, error: `HTTP ${response.status}` };
+    }
+
+    const data: FullGazetteEditionResponse = await response.json();
     return { data, status: response.status };
   } catch (error) {
     clearTimeout(timeoutId);
