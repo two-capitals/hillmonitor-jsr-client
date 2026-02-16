@@ -183,10 +183,3 @@ export interface GazetteAlertMatch {
   gazetteItem: GazetteItem;
 }
 
-/**
- * Full gazette edition data including all alert matches.
- */
-export interface FullGazetteEditionResponse extends GazetteEdition {
-  /** All alert matches found in this gazette edition */
-  alertMatches: GazetteAlertMatch[];
-}

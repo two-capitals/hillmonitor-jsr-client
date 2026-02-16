@@ -27,7 +27,7 @@
  * @module
  */
 
-import type { FullMeetingResponse, FullGazetteEditionResponse } from './platform-types.ts';
+import type { FullMeetingResponse, GazetteEdition, GazetteAlertMatch } from './platform-types.ts';
 
 const REQUEST_TIMEOUT_MS = 30000;
 
@@ -202,6 +202,51 @@ export async function platformRequest<T = unknown>(
 }
 
 /**
+ * Makes an authenticated GET request to the Platform API without user filtering.
+ * Used for organization-level endpoints like full meetings and gazette data.
+ */
+async function organizationGet<T>(path: string): Promise<PlatformResponse<T>> {
+  const HILLMONITOR_API_URL = Deno.env.get('HILLMONITOR_API_URL') || 'https://api.hillmonitor.ca';
+  const HILLMONITOR_SECRET_KEY = Deno.env.get('HILLMONITOR_SECRET_KEY');
+
+  const url = `${HILLMONITOR_API_URL}${path}`;
+
+  const headers = new Headers();
+  headers.set('Authorization', `Bearer ${HILLMONITOR_SECRET_KEY}`);
+  headers.set('Content-Type', 'application/json');
+  headers.set('Accept', 'application/json');
+
+  console.log(`[platform-client] GET ${path}`);
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers,
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      return { data: null, status: response.status, error: `HTTP ${response.status}` };
+    }
+
+    const data: T = await response.json();
+    return { data, status: response.status };
+  } catch (error) {
+    clearTimeout(timeoutId);
+
+    if ((error as Error).name === 'AbortError') {
+      return { data: null, status: 504, error: 'Request timeout' };
+    }
+
+    throw error;
+  }
+}
+
+/**
  * Fetches full meeting data with all alert matches.
  *
  * This is an organization-level request that does not filter by user.
@@ -219,106 +264,53 @@ export async function platformRequest<T = unknown>(
  * }
  * ```
  */
-export async function getFullMeeting(
+export function getFullMeeting(
   meetingId: number
 ): Promise<PlatformResponse<FullMeetingResponse>> {
-  const HILLMONITOR_API_URL = Deno.env.get('HILLMONITOR_API_URL') || 'https://api.hillmonitor.ca';
-  const HILLMONITOR_SECRET_KEY = Deno.env.get('HILLMONITOR_SECRET_KEY');
-
-  const url = `${HILLMONITOR_API_URL}/api/v1/meetings/${meetingId}/full/`;
-
-  const headers = new Headers();
-  headers.set('Authorization', `Bearer ${HILLMONITOR_SECRET_KEY}`);
-  headers.set('Content-Type', 'application/json');
-  headers.set('Accept', 'application/json');
-
-  console.log(`[platform-client] GET /api/v1/meetings/${meetingId}/full/`);
-
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
-
-  try {
-    const response = await fetch(url, {
-      method: 'GET',
-      headers,
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
-
-    if (!response.ok) {
-      return { data: null, status: response.status, error: `HTTP ${response.status}` };
-    }
-
-    const data: FullMeetingResponse = await response.json();
-    return { data, status: response.status };
-  } catch (error) {
-    clearTimeout(timeoutId);
-
-    if ((error as Error).name === 'AbortError') {
-      return { data: null, status: 504, error: 'Request timeout' };
-    }
-
-    throw error;
-  }
+  return organizationGet(`/api/v1/meetings/${meetingId}/full/`);
 }
 
 /**
- * Fetches gazette edition data with all alert matches.
+ * Fetches a gazette edition by ID.
+ *
+ * This is an organization-level request that does not filter by user.
+ *
+ * @param editionId - The gazette edition ID to fetch
+ * @returns Gazette edition data
+ *
+ * @example
+ * ```typescript
+ * const { data, status, error } = await getGazetteEdition(42);
+ * if (data) {
+ *   console.log(`Edition: Vol. ${data.volume}, Issue ${data.issueNumber}`);
+ * }
+ * ```
+ */
+export function getGazetteEdition(
+  editionId: number
+): Promise<PlatformResponse<GazetteEdition>> {
+  return organizationGet(`/api/v1/gazette-editions/${editionId}/`);
+}
+
+/**
+ * Fetches alert matches for a gazette edition.
  *
  * This is an organization-level request that does not filter by user.
  * Used for generating email notifications and reports.
  *
- * @param editionId - The gazette edition ID to fetch
- * @returns Full gazette edition data including all alert matches
+ * @param editionId - The gazette edition ID to fetch matches for
+ * @returns List of gazette alert matches
  *
  * @example
  * ```typescript
  * const { data, status, error } = await getGazetteEditionAlertMatches(42);
  * if (data) {
- *   console.log(`Edition: Vol. ${data.volume}, Issue ${data.issueNumber}`);
- *   console.log(`Matches: ${data.alertMatches.length}`);
+ *   console.log(`Matches: ${data.length}`);
  * }
  * ```
  */
-export async function getGazetteEditionAlertMatches(
+export function getGazetteEditionAlertMatches(
   editionId: number
-): Promise<PlatformResponse<FullGazetteEditionResponse>> {
-  const HILLMONITOR_API_URL = Deno.env.get('HILLMONITOR_API_URL') || 'https://api.hillmonitor.ca';
-  const HILLMONITOR_SECRET_KEY = Deno.env.get('HILLMONITOR_SECRET_KEY');
-
-  const url = `${HILLMONITOR_API_URL}/api/v1/gazette-editions/${editionId}/alert-matches/`;
-
-  const headers = new Headers();
-  headers.set('Authorization', `Bearer ${HILLMONITOR_SECRET_KEY}`);
-  headers.set('Content-Type', 'application/json');
-  headers.set('Accept', 'application/json');
-
-  console.log(`[platform-client] GET /api/v1/gazette-editions/${editionId}/alert-matches/`);
-
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
-
-  try {
-    const response = await fetch(url, {
-      method: 'GET',
-      headers,
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
-
-    if (!response.ok) {
-      return { data: null, status: response.status, error: `HTTP ${response.status}` };
-    }
-
-    const data: FullGazetteEditionResponse = await response.json();
-    return { data, status: response.status };
-  } catch (error) {
-    clearTimeout(timeoutId);
-
-    if ((error as Error).name === 'AbortError') {
-      return { data: null, status: 504, error: 'Request timeout' };
-    }
-
-    throw error;
-  }
+): Promise<PlatformResponse<GazetteAlertMatch[]>> {
+  return organizationGet(`/api/v1/gazette-editions/${editionId}/alert-matches/`);
 }

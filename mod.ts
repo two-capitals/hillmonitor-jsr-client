@@ -50,7 +50,6 @@ export type {
   GazetteEdition,
   GazetteItem,
   GazetteAlertMatch,
-  FullGazetteEditionResponse,
 } from './src/platform-types.ts';
 
 // Auth types and functions
@@ -63,7 +62,7 @@ export { createCorsHandler, getDefaultCorsHandler } from './src/cors.ts';
 
 // Platform client types and functions
 export type { PlatformRequestOptions, PlatformResponse } from './src/platform-client.ts';
-export { platformRequest, getFullMeeting, getGazetteEditionAlertMatches, isPlatformConfigured } from './src/platform-client.ts';
+export { platformRequest, getFullMeeting, getGazetteEdition, getGazetteEditionAlertMatches, isPlatformConfigured } from './src/platform-client.ts';
 
 // Resource handler types and functions
 export type { RequestContext, HandlerFn, ResourceConfig } from './src/resource-handler.ts';
