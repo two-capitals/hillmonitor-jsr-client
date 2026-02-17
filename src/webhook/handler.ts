@@ -32,7 +32,7 @@ import {
 } from '../response.ts';
 import type { CorsHandler } from '../cors.ts';
 import { getDefaultCorsHandler } from '../cors.ts';
-import type { WebhookPayload, GazetteProcessedData } from './types.ts';
+import type { WebhookPayload, GazetteProcessedData, GovtReleaseProcessedData } from './types.ts';
 
 /**
  * Context passed to webhook event handlers.
@@ -77,6 +77,14 @@ export interface WebhookConfig {
    * @param context - The webhook context
    */
   onGazetteProcessed?: (data: GazetteProcessedData, context: WebhookContext) => Promise<void>;
+
+  /**
+   * Handler for `govt_release.processed` events.
+   *
+   * @param data - The government release processing data including release IDs
+   * @param context - The webhook context
+   */
+  onGovtReleaseProcessed?: (data: GovtReleaseProcessedData, context: WebhookContext) => Promise<void>;
 }
 
 /**
@@ -110,7 +118,7 @@ export interface WebhookConfig {
  * ```
  */
 export function serveWebhook(config: WebhookConfig): void {
-  const { onMeetingProcessed, onGazetteProcessed } = config;
+  const { onMeetingProcessed, onGazetteProcessed, onGovtReleaseProcessed } = config;
   const cors = config.cors ?? getDefaultCorsHandler();
   const secret = config.secret ?? Deno.env.get('HILLMONITOR_WEBHOOK_SECRET');
 
@@ -170,6 +178,11 @@ export function serveWebhook(config: WebhookConfig): void {
         case 'gazette.processed':
           if (onGazetteProcessed) {
             await onGazetteProcessed(payload.data, ctx);
+          }
+          break;
+        case 'govt_release.processed':
+          if (onGovtReleaseProcessed) {
+            await onGovtReleaseProcessed(payload.data, ctx);
           }
           break;
         default:

@@ -27,7 +27,7 @@
  * @module
  */
 
-import type { FullMeetingResponse, GazetteEdition, GazetteAlertMatch } from './platform-types.ts';
+import type { FullMeetingResponse, GazetteEdition, GazetteAlertMatch, GovtRelease, GovtReleaseAlertMatch } from './platform-types.ts';
 
 const REQUEST_TIMEOUT_MS = 30000;
 
@@ -313,4 +313,33 @@ export function getGazetteEditionAlertMatches(
   editionId: number
 ): Promise<PlatformResponse<GazetteAlertMatch[]>> {
   return organizationGet(`/api/v1/gazette-editions/${editionId}/alert-matches/`);
+}
+
+/**
+ * Fetches a government release by ID.
+ *
+ * This is an organization-level request that does not filter by user.
+ *
+ * @param releaseId - The government release ID to fetch
+ * @returns Government release data
+ */
+export function getGovtRelease(
+  releaseId: number
+): Promise<PlatformResponse<GovtRelease>> {
+  return organizationGet(`/api/v1/government-releases/${releaseId}/`);
+}
+
+/**
+ * Fetches alert matches for a government release.
+ *
+ * This is an organization-level request that does not filter by user.
+ * Used for generating email notifications and reports.
+ *
+ * @param releaseId - The government release ID to fetch matches for
+ * @returns List of government release alert matches
+ */
+export function getGovtReleaseAlertMatches(
+  releaseId: number
+): Promise<PlatformResponse<GovtReleaseAlertMatch[]>> {
+  return organizationGet(`/api/v1/government-releases/${releaseId}/alert-matches/`);
 }

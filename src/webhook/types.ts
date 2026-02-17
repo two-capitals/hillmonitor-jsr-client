@@ -25,13 +25,26 @@ export interface GazetteProcessedData {
 }
 
 /**
+ * Data payload for the `govt_release.processed` webhook event.
+ */
+export interface GovtReleaseProcessedData {
+  /** Number of government release records processed */
+  records_processed: number;
+  /** Number of alert matches created */
+  matches_created: number;
+  /** IDs of the government releases that were processed */
+  release_ids: number[];
+}
+
+/**
  * Union type of all webhook event names.
  */
-export type WebhookEventType = 'meeting.processed' | 'gazette.processed';
+export type WebhookEventType = 'meeting.processed' | 'gazette.processed' | 'govt_release.processed';
 
 /**
  * Webhook payload sent by the HillMonitor platform.
  */
 export type WebhookPayload =
   | { event: 'meeting.processed'; data: MeetingProcessedData }
-  | { event: 'gazette.processed'; data: GazetteProcessedData };
+  | { event: 'gazette.processed'; data: GazetteProcessedData }
+  | { event: 'govt_release.processed'; data: GovtReleaseProcessedData };

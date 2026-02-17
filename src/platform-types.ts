@@ -183,3 +183,51 @@ export interface GazetteAlertMatch {
   gazetteItem: GazetteItem;
 }
 
+/**
+ * A government news release.
+ */
+export interface GovtRelease {
+  /** Unique identifier */
+  id: number;
+  /** UUID identifier from the release system */
+  releaseId: string;
+  /** Title of the release */
+  title: string;
+  /** URL to the release on Canada.ca */
+  url: string;
+  /** Date the release was published (ISO date string) */
+  publishedDate: string;
+  /** Government department that published the release */
+  department: string;
+  /** Type of release (e.g., "news_release", "statement") */
+  releaseType: string;
+  /** Full text content of the release */
+  contentText: string;
+}
+
+/**
+ * An alert match found in a government news release.
+ */
+export interface GovtReleaseAlertMatch {
+  /** Unique identifier */
+  id: number;
+  /** ID of the alert that triggered this match */
+  alert: number;
+  /** The search phrase that was matched */
+  phrase: string;
+  /** External user ID who owns this alert */
+  externalUserId: string;
+  /** The source type of this match */
+  source: 'govt_news';
+  /** The actual text that matched the phrase */
+  matchedText: string;
+  /** Character position where the match starts */
+  startPosition: number;
+  /** Character position where the match ends */
+  endPosition: number;
+  /** ISO timestamp when the match was created */
+  createdAt: string;
+  /** The government release containing this match */
+  govtRelease: GovtRelease;
+}
+
