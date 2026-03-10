@@ -231,3 +231,79 @@ export interface GovtReleaseAlertMatch {
   govtRelease: GovtRelease;
 }
 
+/**
+ * A CPAC video.
+ */
+export interface CpacVideo {
+  /** Unique identifier */
+  id: number;
+  /** CPAC video identifier */
+  videoId: string;
+  /** Video title */
+  title: string;
+  /** Video category */
+  category: string;
+  /** Video description */
+  description: string;
+  /** AI-generated summary */
+  summary: string;
+  /** Date the video premiered (ISO date string), or null */
+  premiereDate: string | null;
+  /** URL to the video on CPAC */
+  videoUrl: string;
+  /** URL to the episode page on CPAC */
+  episodeUrl: string;
+  /** Video duration */
+  duration: string;
+  /** ISO timestamp when processing completed */
+  completedAt: string;
+}
+
+/**
+ * A segment of a CPAC video transcript.
+ */
+export interface CpacVideoSegment {
+  /** Unique identifier */
+  id: number;
+  /** Transcript text of the segment */
+  text: string;
+  /** Speaker name */
+  speaker: string;
+  /** Start time of the segment */
+  startTime: string;
+  /** End time of the segment */
+  endTime: string;
+  /** Language of the segment */
+  language: string;
+  /** Source of the segment */
+  source: string;
+}
+
+/**
+ * An alert match found in a CPAC video segment.
+ */
+export interface CpacVideoAlertMatch {
+  /** Unique identifier */
+  id: number;
+  /** ID of the alert that triggered this match */
+  alert: number;
+  /** The search phrase that was matched */
+  phrase: string;
+  /** External user ID who owns this alert */
+  externalUserId: string;
+  /** The source type of this match */
+  source: 'cpac_video';
+  /** The actual text that matched the phrase */
+  matchedText: string;
+  /** Character position where the match starts */
+  startPosition: number;
+  /** Character position where the match ends */
+  endPosition: number;
+  /** ISO timestamp when the match was created */
+  createdAt: string;
+  /** The CPAC video containing this match */
+  cpacVideo: CpacVideo;
+  /** The CPAC video segment containing this match */
+  cpacVideoSegment: CpacVideoSegment;
+}
+

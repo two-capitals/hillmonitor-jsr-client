@@ -32,7 +32,7 @@ import {
 } from '../response.ts';
 import type { CorsHandler } from '../cors.ts';
 import { getDefaultCorsHandler } from '../cors.ts';
-import type { WebhookPayload, GazetteProcessedData, GovtReleaseProcessedData } from './types.ts';
+import type { WebhookPayload, GazetteProcessedData, GovtReleaseProcessedData, CpacVideoProcessedData } from './types.ts';
 
 /**
  * Context passed to webhook event handlers.
@@ -85,6 +85,14 @@ export interface WebhookConfig {
    * @param context - The webhook context
    */
   onGovtReleaseProcessed?: (data: GovtReleaseProcessedData, context: WebhookContext) => Promise<void>;
+
+  /**
+   * Handler for `cpac_video.processed` events.
+   *
+   * @param data - The CPAC video processing data including video IDs
+   * @param context - The webhook context
+   */
+  onCpacVideoProcessed?: (data: CpacVideoProcessedData, context: WebhookContext) => Promise<void>;
 }
 
 /**
@@ -118,7 +126,7 @@ export interface WebhookConfig {
  * ```
  */
 export function serveWebhook(config: WebhookConfig): void {
-  const { onMeetingProcessed, onGazetteProcessed, onGovtReleaseProcessed } = config;
+  const { onMeetingProcessed, onGazetteProcessed, onGovtReleaseProcessed, onCpacVideoProcessed } = config;
   const cors = config.cors ?? getDefaultCorsHandler();
   const secret = config.secret ?? Deno.env.get('HILLMONITOR_WEBHOOK_SECRET');
 
@@ -183,6 +191,11 @@ export function serveWebhook(config: WebhookConfig): void {
         case 'govt_release.processed':
           if (onGovtReleaseProcessed) {
             await onGovtReleaseProcessed(payload.data, ctx);
+          }
+          break;
+        case 'cpac_video.processed':
+          if (onCpacVideoProcessed) {
+            await onCpacVideoProcessed(payload.data, ctx);
           }
           break;
         default:

@@ -27,7 +27,7 @@
  * @module
  */
 
-import type { FullMeetingResponse, GazetteEdition, GazetteAlertMatch, GovtRelease, GovtReleaseAlertMatch } from './platform-types.ts';
+import type { FullMeetingResponse, GazetteEdition, GazetteAlertMatch, GovtRelease, GovtReleaseAlertMatch, CpacVideo, CpacVideoAlertMatch } from './platform-types.ts';
 
 const REQUEST_TIMEOUT_MS = 30000;
 
@@ -342,4 +342,33 @@ export function getGovtReleaseAlertMatches(
   releaseId: number
 ): Promise<PlatformResponse<GovtReleaseAlertMatch[]>> {
   return organizationGet(`/api/v1/government-releases/${releaseId}/alert-matches/`);
+}
+
+/**
+ * Fetches a CPAC video by ID.
+ *
+ * This is an organization-level request that does not filter by user.
+ *
+ * @param videoId - The CPAC video ID to fetch
+ * @returns CPAC video data
+ */
+export function getCpacVideo(
+  videoId: number
+): Promise<PlatformResponse<CpacVideo>> {
+  return organizationGet(`/api/v1/cpac-videos/${videoId}/`);
+}
+
+/**
+ * Fetches alert matches for a CPAC video.
+ *
+ * This is an organization-level request that does not filter by user.
+ * Used for generating email notifications and reports.
+ *
+ * @param videoId - The CPAC video ID to fetch matches for
+ * @returns List of CPAC video alert matches
+ */
+export function getCpacVideoAlertMatches(
+  videoId: number
+): Promise<PlatformResponse<CpacVideoAlertMatch[]>> {
+  return organizationGet(`/api/v1/cpac-videos/${videoId}/alert-matches/`);
 }

@@ -37,9 +37,21 @@ export interface GovtReleaseProcessedData {
 }
 
 /**
+ * Data payload for the `cpac_video.processed` webhook event.
+ */
+export interface CpacVideoProcessedData {
+  /** Number of CPAC video records processed */
+  records_processed: number;
+  /** Number of alert matches created */
+  matches_created: number;
+  /** IDs of the CPAC videos that were processed */
+  video_ids: number[];
+}
+
+/**
  * Union type of all webhook event names.
  */
-export type WebhookEventType = 'meeting.processed' | 'gazette.processed' | 'govt_release.processed';
+export type WebhookEventType = 'meeting.processed' | 'gazette.processed' | 'govt_release.processed' | 'cpac_video.processed';
 
 /**
  * Webhook payload sent by the HillMonitor platform.
@@ -47,4 +59,5 @@ export type WebhookEventType = 'meeting.processed' | 'gazette.processed' | 'govt
 export type WebhookPayload =
   | { event: 'meeting.processed'; data: MeetingProcessedData }
   | { event: 'gazette.processed'; data: GazetteProcessedData }
-  | { event: 'govt_release.processed'; data: GovtReleaseProcessedData };
+  | { event: 'govt_release.processed'; data: GovtReleaseProcessedData }
+  | { event: 'cpac_video.processed'; data: CpacVideoProcessedData };
