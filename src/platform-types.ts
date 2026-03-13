@@ -277,6 +277,8 @@ export interface CpacVideoSegment {
   language: string;
   /** Source of the segment */
   source: string;
+  /** URL of the segment thumbnail image */
+  thumbnailUrl: string;
 }
 
 /**
