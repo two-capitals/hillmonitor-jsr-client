@@ -309,3 +309,55 @@ export interface CpacVideoAlertMatch {
   cpacVideoSegment: CpacVideoSegment;
 }
 
+/**
+ * A social media post authored by a parliamentarian.
+ */
+export interface SocialPost {
+  /** Unique identifier */
+  id: number;
+  /** Platform-native post id (e.g. the tweet id) */
+  postId: string;
+  /** Platform the post was published on (e.g. "x") */
+  platform: string;
+  /** ID of the linked speaker (MP), if resolved */
+  speaker: number | null;
+  /** Display name of the linked speaker, if resolved */
+  speakerName: string | null;
+  /** Handle without the leading @ */
+  username: string;
+  /** Full text content of the post */
+  text: string;
+  /** URL to the post on the source platform */
+  url: string;
+  /** ISO timestamp when the post was published */
+  postedAt: string;
+  /** ISO timestamp when the post was fetched */
+  fetchedAt: string;
+}
+
+/**
+ * An alert match found in a parliamentarian's social media post.
+ */
+export interface SocialPostAlertMatch {
+  /** Unique identifier */
+  id: number;
+  /** ID of the alert that triggered this match */
+  alert: number;
+  /** The search phrase that was matched */
+  phrase: string;
+  /** External user ID who owns this alert */
+  externalUserId: string;
+  /** The source type of this match */
+  source: 'mp_social';
+  /** The actual text that matched the phrase */
+  matchedText: string;
+  /** Character position where the match starts */
+  startPosition: number;
+  /** Character position where the match ends */
+  endPosition: number;
+  /** ISO timestamp when the match was created */
+  createdAt: string;
+  /** The social post containing this match */
+  socialPost: SocialPost;
+}
+

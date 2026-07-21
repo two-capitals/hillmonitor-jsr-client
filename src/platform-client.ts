@@ -27,7 +27,7 @@
  * @module
  */
 
-import type { FullMeetingResponse, GazetteEdition, GazetteAlertMatch, GovtRelease, GovtReleaseAlertMatch, CpacVideo, CpacVideoAlertMatch } from './platform-types.ts';
+import type { FullMeetingResponse, GazetteEdition, GazetteAlertMatch, GovtRelease, GovtReleaseAlertMatch, CpacVideo, CpacVideoAlertMatch, SocialPost, SocialPostAlertMatch } from './platform-types.ts';
 
 const REQUEST_TIMEOUT_MS = 30000;
 
@@ -371,4 +371,33 @@ export function getCpacVideoAlertMatches(
   videoId: number
 ): Promise<PlatformResponse<CpacVideoAlertMatch[]>> {
   return organizationGet(`/api/v1/cpac-videos/${videoId}/alert-matches/`);
+}
+
+/**
+ * Fetches a social media post by ID.
+ *
+ * This is an organization-level request that does not filter by user.
+ *
+ * @param postId - The social post ID to fetch
+ * @returns Social post data
+ */
+export function getSocialPost(
+  postId: number
+): Promise<PlatformResponse<SocialPost>> {
+  return organizationGet(`/api/v1/social-posts/${postId}/`);
+}
+
+/**
+ * Fetches alert matches for a social media post.
+ *
+ * This is an organization-level request that does not filter by user.
+ * Used for generating email notifications and reports.
+ *
+ * @param postId - The social post ID to fetch matches for
+ * @returns List of social post alert matches
+ */
+export function getSocialPostAlertMatches(
+  postId: number
+): Promise<PlatformResponse<SocialPostAlertMatch[]>> {
+  return organizationGet(`/api/v1/social-posts/${postId}/alert-matches/`);
 }
