@@ -323,6 +323,8 @@ export interface SocialPost {
   speaker: number | null;
   /** Display name of the linked speaker, if resolved */
   speakerName: string | null;
+  /** Speaker role when linked (e.g. "MP", "Senator") */
+  speakerType: string | null;
   /** Handle without the leading @ */
   username: string;
   /** Full text content of the post */
