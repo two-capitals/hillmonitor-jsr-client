@@ -331,6 +331,8 @@ export interface SocialPost {
   text: string;
   /** URL to the post on the source platform */
   url: string;
+  /** Image/preview URLs attached to the post */
+  mediaUrls?: string[];
   /** ISO timestamp when the post was published */
   postedAt: string;
   /** ISO timestamp when the post was fetched */
