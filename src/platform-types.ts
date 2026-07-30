@@ -365,3 +365,70 @@ export interface SocialPostAlertMatch {
   socialPost: SocialPost;
 }
 
+/**
+ * A section within a bill publication used for match display.
+ */
+export interface BillSection {
+  label: string;
+  marginalNote?: string;
+  text: string;
+  start: number;
+  end: number;
+}
+
+/**
+ * A LEGISinfo bill publication (version of a bill's text).
+ */
+export interface BillPublication {
+  /** Unique identifier */
+  id: number;
+  /** LEGISinfo publication ID */
+  publicationId: number;
+  /** LEGISinfo bill ID */
+  billId: number;
+  /** Bill number code (e.g. C-2, S-205) */
+  numberCode: string;
+  parliamentNumber: number;
+  sessionNumber: number;
+  longTitle: string;
+  shortTitle: string;
+  /** Publication stage name (e.g. First Reading) */
+  publicationType: string;
+  publicationTypeId: number | null;
+  /** Human-readable DocumentViewer URL */
+  documentUrl: string;
+  xmlUrl: string;
+  /** ISO timestamp associated with the publication event, if known */
+  publishedAt: string | null;
+  /** Full searchable bill text */
+  contentText: string;
+  /** Structured sections with offsets into contentText */
+  sections: BillSection[];
+}
+
+/**
+ * An alert match found in a bill publication.
+ */
+export interface BillAlertMatch {
+  /** Unique identifier */
+  id: number;
+  /** ID of the alert that triggered this match */
+  alert: number;
+  /** The search phrase that was matched */
+  phrase: string;
+  /** External user ID who owns this alert */
+  externalUserId: string;
+  /** The source type of this match */
+  source: 'bill';
+  /** The actual text that matched the phrase */
+  matchedText: string;
+  /** Character position where the match starts */
+  startPosition: number;
+  /** Character position where the match ends */
+  endPosition: number;
+  /** ISO timestamp when the match was created */
+  createdAt: string;
+  /** The bill publication containing this match */
+  billPublication: BillPublication;
+}
+

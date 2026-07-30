@@ -32,7 +32,14 @@ import {
 } from '../response.ts';
 import type { CorsHandler } from '../cors.ts';
 import { getDefaultCorsHandler } from '../cors.ts';
-import type { WebhookPayload, GazetteProcessedData, GovtReleaseProcessedData, CpacVideoProcessedData, SocialPostProcessedData } from './types.ts';
+import type {
+  WebhookPayload,
+  GazetteProcessedData,
+  GovtReleaseProcessedData,
+  CpacVideoProcessedData,
+  SocialPostProcessedData,
+  BillProcessedData,
+} from './types.ts';
 
 /**
  * Context passed to webhook event handlers.
@@ -101,6 +108,14 @@ export interface WebhookConfig {
    * @param context - The webhook context
    */
   onSocialPostProcessed?: (data: SocialPostProcessedData, context: WebhookContext) => Promise<void>;
+
+  /**
+   * Handler for `bill.processed` events.
+   *
+   * @param data - The bill processing data including publication IDs
+   * @param context - The webhook context
+   */
+  onBillProcessed?: (data: BillProcessedData, context: WebhookContext) => Promise<void>;
 }
 
 /**
@@ -134,7 +149,14 @@ export interface WebhookConfig {
  * ```
  */
 export function serveWebhook(config: WebhookConfig): void {
-  const { onMeetingProcessed, onGazetteProcessed, onGovtReleaseProcessed, onCpacVideoProcessed, onSocialPostProcessed } = config;
+  const {
+    onMeetingProcessed,
+    onGazetteProcessed,
+    onGovtReleaseProcessed,
+    onCpacVideoProcessed,
+    onSocialPostProcessed,
+    onBillProcessed,
+  } = config;
   const cors = config.cors ?? getDefaultCorsHandler();
   const secret = config.secret ?? Deno.env.get('HILLMONITOR_WEBHOOK_SECRET');
 
@@ -209,6 +231,11 @@ export function serveWebhook(config: WebhookConfig): void {
         case 'social_post.processed':
           if (onSocialPostProcessed) {
             await onSocialPostProcessed(payload.data, ctx);
+          }
+          break;
+        case 'bill.processed':
+          if (onBillProcessed) {
+            await onBillProcessed(payload.data, ctx);
           }
           break;
         default:

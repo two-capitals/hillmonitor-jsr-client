@@ -57,6 +57,9 @@ export type {
   CpacVideoAlertMatch,
   SocialPost,
   SocialPostAlertMatch,
+  BillSection,
+  BillPublication,
+  BillAlertMatch,
 } from './src/platform-types.ts';
 
 // Auth types and functions
@@ -69,7 +72,21 @@ export { createCorsHandler, getDefaultCorsHandler } from './src/cors.ts';
 
 // Platform client types and functions
 export type { PlatformRequestOptions, PlatformResponse } from './src/platform-client.ts';
-export { platformRequest, getFullMeeting, getGazetteEdition, getGazetteEditionAlertMatches, getGovtRelease, getGovtReleaseAlertMatches, getCpacVideo, getCpacVideoAlertMatches, getSocialPost, getSocialPostAlertMatches, isPlatformConfigured } from './src/platform-client.ts';
+export {
+  platformRequest,
+  getFullMeeting,
+  getGazetteEdition,
+  getGazetteEditionAlertMatches,
+  getGovtRelease,
+  getGovtReleaseAlertMatches,
+  getCpacVideo,
+  getCpacVideoAlertMatches,
+  getSocialPost,
+  getSocialPostAlertMatches,
+  getBillPublication,
+  getBillPublicationAlertMatches,
+  isPlatformConfigured,
+} from './src/platform-client.ts';
 
 // Resource handler types and functions
 export type { RequestContext, HandlerFn, ResourceConfig } from './src/resource-handler.ts';
@@ -101,6 +118,7 @@ export type {
   GovtReleaseProcessedData,
   CpacVideoProcessedData,
   SocialPostProcessedData,
+  BillProcessedData,
   WebhookEventType,
 } from './src/webhook/types.ts';
 

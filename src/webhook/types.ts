@@ -61,9 +61,27 @@ export interface SocialPostProcessedData {
 }
 
 /**
+ * Data payload for the `bill.processed` webhook event.
+ */
+export interface BillProcessedData {
+  /** Number of new bill publications processed */
+  records_processed: number;
+  /** Number of alert matches created */
+  matches_created: number;
+  /** Local BillPublication IDs that produced matches */
+  publication_ids: number[];
+}
+
+/**
  * Union type of all webhook event names.
  */
-export type WebhookEventType = 'meeting.processed' | 'gazette.processed' | 'govt_release.processed' | 'cpac_video.processed' | 'social_post.processed';
+export type WebhookEventType =
+  | 'meeting.processed'
+  | 'gazette.processed'
+  | 'govt_release.processed'
+  | 'cpac_video.processed'
+  | 'social_post.processed'
+  | 'bill.processed';
 
 /**
  * Webhook payload sent by the HillMonitor platform.
@@ -73,4 +91,5 @@ export type WebhookPayload =
   | { event: 'gazette.processed'; data: GazetteProcessedData }
   | { event: 'govt_release.processed'; data: GovtReleaseProcessedData }
   | { event: 'cpac_video.processed'; data: CpacVideoProcessedData }
-  | { event: 'social_post.processed'; data: SocialPostProcessedData };
+  | { event: 'social_post.processed'; data: SocialPostProcessedData }
+  | { event: 'bill.processed'; data: BillProcessedData };

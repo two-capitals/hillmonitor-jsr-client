@@ -27,7 +27,19 @@
  * @module
  */
 
-import type { FullMeetingResponse, GazetteEdition, GazetteAlertMatch, GovtRelease, GovtReleaseAlertMatch, CpacVideo, CpacVideoAlertMatch, SocialPost, SocialPostAlertMatch } from './platform-types.ts';
+import type {
+  FullMeetingResponse,
+  GazetteEdition,
+  GazetteAlertMatch,
+  GovtRelease,
+  GovtReleaseAlertMatch,
+  CpacVideo,
+  CpacVideoAlertMatch,
+  SocialPost,
+  SocialPostAlertMatch,
+  BillPublication,
+  BillAlertMatch,
+} from './platform-types.ts';
 
 const REQUEST_TIMEOUT_MS = 30000;
 
@@ -400,4 +412,33 @@ export function getSocialPostAlertMatches(
   postId: number
 ): Promise<PlatformResponse<SocialPostAlertMatch[]>> {
   return organizationGet(`/api/v1/social-posts/${postId}/alert-matches/`);
+}
+
+/**
+ * Fetches a bill publication by ID.
+ *
+ * This is an organization-level request that does not filter by user.
+ *
+ * @param publicationId - The local bill publication ID to fetch
+ * @returns Bill publication data
+ */
+export function getBillPublication(
+  publicationId: number
+): Promise<PlatformResponse<BillPublication>> {
+  return organizationGet(`/api/v1/bill-publications/${publicationId}/`);
+}
+
+/**
+ * Fetches alert matches for a bill publication.
+ *
+ * This is an organization-level request that does not filter by user.
+ * Used for generating email notifications and reports.
+ *
+ * @param publicationId - The local bill publication ID to fetch matches for
+ * @returns List of bill alert matches
+ */
+export function getBillPublicationAlertMatches(
+  publicationId: number
+): Promise<PlatformResponse<BillAlertMatch[]>> {
+  return organizationGet(`/api/v1/bill-publications/${publicationId}/alert-matches/`);
 }
