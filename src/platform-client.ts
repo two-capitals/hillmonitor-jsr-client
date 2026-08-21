@@ -39,6 +39,8 @@ import type {
   SocialPostAlertMatch,
   BillPublication,
   BillAlertMatch,
+  OrderPaperQuestion,
+  OrderPaperQuestionAlertMatch,
 } from './platform-types.ts';
 
 const REQUEST_TIMEOUT_MS = 30000;
@@ -441,4 +443,33 @@ export function getBillPublicationAlertMatches(
   publicationId: number
 ): Promise<PlatformResponse<BillAlertMatch[]>> {
   return organizationGet(`/api/v1/bill-publications/${publicationId}/alert-matches/`);
+}
+
+/**
+ * Fetches an order paper question by ID.
+ *
+ * This is an organization-level request that does not filter by user.
+ *
+ * @param questionId - The local order paper question ID to fetch
+ * @returns Order paper question data
+ */
+export function getOrderPaperQuestion(
+  questionId: number
+): Promise<PlatformResponse<OrderPaperQuestion>> {
+  return organizationGet(`/api/v1/order-paper-questions/${questionId}/`);
+}
+
+/**
+ * Fetches alert matches for an order paper question.
+ *
+ * This is an organization-level request that does not filter by user.
+ * Used for generating email notifications and reports.
+ *
+ * @param questionId - The local order paper question ID to fetch matches for
+ * @returns List of order paper question alert matches
+ */
+export function getOrderPaperQuestionAlertMatches(
+  questionId: number
+): Promise<PlatformResponse<OrderPaperQuestionAlertMatch[]>> {
+  return organizationGet(`/api/v1/order-paper-questions/${questionId}/alert-matches/`);
 }

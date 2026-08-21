@@ -60,6 +60,8 @@ export type {
   BillSection,
   BillPublication,
   BillAlertMatch,
+  OrderPaperQuestion,
+  OrderPaperQuestionAlertMatch,
 } from './src/platform-types.ts';
 
 // Auth types and functions
@@ -85,6 +87,8 @@ export {
   getSocialPostAlertMatches,
   getBillPublication,
   getBillPublicationAlertMatches,
+  getOrderPaperQuestion,
+  getOrderPaperQuestionAlertMatches,
   isPlatformConfigured,
 } from './src/platform-client.ts';
 
@@ -119,6 +123,7 @@ export type {
   CpacVideoProcessedData,
   SocialPostProcessedData,
   BillProcessedData,
+  OrderPaperQuestionProcessedData,
   WebhookEventType,
 } from './src/webhook/types.ts';
 

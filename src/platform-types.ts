@@ -432,3 +432,69 @@ export interface BillAlertMatch {
   billPublication: BillPublication;
 }
 
+/**
+ * An Order Paper / Written Question (answered) record.
+ */
+export interface OrderPaperQuestion {
+  /** Unique identifier */
+  id: number;
+  /** UUID identifier from the scrape table */
+  questionId: string;
+  /** Parliament session, e.g. "45-1" */
+  parliamentSession: string;
+  /** Question number (without Q- prefix) */
+  questionNumber: number;
+  /** Canonical Our Commons URL */
+  url: string;
+  /** Date the question was asked (ISO date), or null */
+  dateAsked: string | null;
+  /** Date the answer was tabled (ISO date), or null */
+  dateAnswered: string | null;
+  /** ISO timestamp when the row was scraped */
+  scrapedAt: string;
+  /** Name of the MP who asked */
+  askedByName: string;
+  /** Constituency of the asking MP */
+  constituency: string;
+  /** Responding minister / office */
+  responseFrom: string;
+  /** Sessional paper number, if present */
+  sessionalPaperNumber: string;
+  /** Topic tags */
+  topics: string[];
+  /** Full question text */
+  questionText: string;
+  /** Full response text (may be empty for Hansard-only answers) */
+  responseText: string;
+  /** Response mode: html_sessional_paper | hansard_link | unknown */
+  responseMode: string;
+  /** Hansard DocumentViewer URL when response is Hansard-only */
+  hansardUrl: string;
+}
+
+/**
+ * An alert match found in an order paper question.
+ */
+export interface OrderPaperQuestionAlertMatch {
+  /** Unique identifier */
+  id: number;
+  /** ID of the alert that triggered this match */
+  alert: number;
+  /** The search phrase that was matched */
+  phrase: string;
+  /** External user ID who owns this alert */
+  externalUserId: string;
+  /** The source type of this match */
+  source: 'order_paper';
+  /** The actual text that matched the phrase */
+  matchedText: string;
+  /** Character position where the match starts */
+  startPosition: number;
+  /** Character position where the match ends */
+  endPosition: number;
+  /** ISO timestamp when the match was created */
+  createdAt: string;
+  /** The order paper question containing this match */
+  orderPaperQuestion: OrderPaperQuestion;
+}
+

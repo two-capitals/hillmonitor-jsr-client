@@ -36,6 +36,7 @@ import type {
   WebhookPayload,
   GazetteProcessedData,
   GovtReleaseProcessedData,
+  OrderPaperQuestionProcessedData,
   CpacVideoProcessedData,
   SocialPostProcessedData,
   BillProcessedData,
@@ -116,6 +117,17 @@ export interface WebhookConfig {
    * @param context - The webhook context
    */
   onBillProcessed?: (data: BillProcessedData, context: WebhookContext) => Promise<void>;
+
+  /**
+   * Handler for `order_paper_question.processed` events.
+   *
+   * @param data - The order paper processing data including question IDs
+   * @param context - The webhook context
+   */
+  onOrderPaperQuestionProcessed?: (
+    data: OrderPaperQuestionProcessedData,
+    context: WebhookContext,
+  ) => Promise<void>;
 }
 
 /**
@@ -156,6 +168,7 @@ export function serveWebhook(config: WebhookConfig): void {
     onCpacVideoProcessed,
     onSocialPostProcessed,
     onBillProcessed,
+    onOrderPaperQuestionProcessed,
   } = config;
   const cors = config.cors ?? getDefaultCorsHandler();
   const secret = config.secret ?? Deno.env.get('HILLMONITOR_WEBHOOK_SECRET');
@@ -236,6 +249,11 @@ export function serveWebhook(config: WebhookConfig): void {
         case 'bill.processed':
           if (onBillProcessed) {
             await onBillProcessed(payload.data, ctx);
+          }
+          break;
+        case 'order_paper_question.processed':
+          if (onOrderPaperQuestionProcessed) {
+            await onOrderPaperQuestionProcessed(payload.data, ctx);
           }
           break;
         default:

@@ -73,6 +73,18 @@ export interface BillProcessedData {
 }
 
 /**
+ * Data payload for the `order_paper_question.processed` webhook event.
+ */
+export interface OrderPaperQuestionProcessedData {
+  /** Number of order paper question records processed */
+  records_processed: number;
+  /** Number of alert matches created */
+  matches_created: number;
+  /** Local OrderPaperQuestion IDs that produced matches */
+  question_ids: number[];
+}
+
+/**
  * Union type of all webhook event names.
  */
 export type WebhookEventType =
@@ -81,7 +93,8 @@ export type WebhookEventType =
   | 'govt_release.processed'
   | 'cpac_video.processed'
   | 'social_post.processed'
-  | 'bill.processed';
+  | 'bill.processed'
+  | 'order_paper_question.processed';
 
 /**
  * Webhook payload sent by the HillMonitor platform.
@@ -92,4 +105,5 @@ export type WebhookPayload =
   | { event: 'govt_release.processed'; data: GovtReleaseProcessedData }
   | { event: 'cpac_video.processed'; data: CpacVideoProcessedData }
   | { event: 'social_post.processed'; data: SocialPostProcessedData }
-  | { event: 'bill.processed'; data: BillProcessedData };
+  | { event: 'bill.processed'; data: BillProcessedData }
+  | { event: 'order_paper_question.processed'; data: OrderPaperQuestionProcessedData };
