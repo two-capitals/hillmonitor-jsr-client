@@ -41,6 +41,12 @@ import type {
   BillAlertMatch,
   OrderPaperQuestion,
   OrderPaperQuestionAlertMatch,
+  Consultation,
+  ConsultationAlertMatch,
+  AtiRequest,
+  AtiRequestAlertMatch,
+  OrderInCouncil,
+  OrderInCouncilAlertMatch,
 } from './platform-types.ts';
 
 const REQUEST_TIMEOUT_MS = 30000;
@@ -472,4 +478,40 @@ export function getOrderPaperQuestionAlertMatches(
   questionId: number
 ): Promise<PlatformResponse<OrderPaperQuestionAlertMatch[]>> {
   return organizationGet(`/api/v1/order-paper-questions/${questionId}/alert-matches/`);
+}
+
+export function getConsultation(
+  consultationId: number
+): Promise<PlatformResponse<Consultation>> {
+  return organizationGet(`/api/v1/consultations/${consultationId}/`);
+}
+
+export function getConsultationAlertMatches(
+  consultationId: number
+): Promise<PlatformResponse<ConsultationAlertMatch[]>> {
+  return organizationGet(`/api/v1/consultations/${consultationId}/alert-matches/`);
+}
+
+export function getAtiRequest(
+  requestId: number
+): Promise<PlatformResponse<AtiRequest>> {
+  return organizationGet(`/api/v1/ati-requests/${requestId}/`);
+}
+
+export function getAtiRequestAlertMatches(
+  requestId: number
+): Promise<PlatformResponse<AtiRequestAlertMatch[]>> {
+  return organizationGet(`/api/v1/ati-requests/${requestId}/alert-matches/`);
+}
+
+export function getOrderInCouncil(
+  oicId: number
+): Promise<PlatformResponse<OrderInCouncil>> {
+  return organizationGet(`/api/v1/orders-in-council/${oicId}/`);
+}
+
+export function getOrderInCouncilAlertMatches(
+  oicId: number
+): Promise<PlatformResponse<OrderInCouncilAlertMatch[]>> {
+  return organizationGet(`/api/v1/orders-in-council/${oicId}/alert-matches/`);
 }

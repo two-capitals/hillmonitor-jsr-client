@@ -62,6 +62,12 @@ export type {
   BillAlertMatch,
   OrderPaperQuestion,
   OrderPaperQuestionAlertMatch,
+  Consultation,
+  ConsultationAlertMatch,
+  AtiRequest,
+  AtiRequestAlertMatch,
+  OrderInCouncil,
+  OrderInCouncilAlertMatch,
 } from './src/platform-types.ts';
 
 // Auth types and functions
@@ -89,6 +95,12 @@ export {
   getBillPublicationAlertMatches,
   getOrderPaperQuestion,
   getOrderPaperQuestionAlertMatches,
+  getConsultation,
+  getConsultationAlertMatches,
+  getAtiRequest,
+  getAtiRequestAlertMatches,
+  getOrderInCouncil,
+  getOrderInCouncilAlertMatches,
   isPlatformConfigured,
 } from './src/platform-client.ts';
 
@@ -124,6 +136,9 @@ export type {
   SocialPostProcessedData,
   BillProcessedData,
   OrderPaperQuestionProcessedData,
+  ConsultationProcessedData,
+  AtiRequestProcessedData,
+  OrderInCouncilProcessedData,
   WebhookEventType,
 } from './src/webhook/types.ts';
 

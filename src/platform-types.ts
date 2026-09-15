@@ -498,3 +498,83 @@ export interface OrderPaperQuestionAlertMatch {
   orderPaperQuestion: OrderPaperQuestion;
 }
 
+export interface Consultation {
+  id: number;
+  consultationId: string;
+  title: string;
+  description: string;
+  subjects: string;
+  department: string;
+  status: string;
+  startDate: string | null;
+  endDate: string | null;
+  url: string;
+  recordModified: string | null;
+  scrapedAt: string;
+}
+
+export interface ConsultationAlertMatch {
+  id: number;
+  alert: number;
+  phrase: string;
+  externalUserId: string;
+  source: 'consultation';
+  matchedText: string;
+  startPosition: number;
+  endPosition: number;
+  createdAt: string;
+  consultation: Consultation;
+}
+
+export interface AtiRequest {
+  id: number;
+  requestId: string;
+  requestNumber: string;
+  institution: string;
+  summary: string;
+  year: number | null;
+  month: number | null;
+  disposition: string;
+  url: string;
+  publishedDate: string | null;
+  scrapedAt: string;
+}
+
+export interface AtiRequestAlertMatch {
+  id: number;
+  alert: number;
+  phrase: string;
+  externalUserId: string;
+  source: 'ati';
+  matchedText: string;
+  startPosition: number;
+  endPosition: number;
+  createdAt: string;
+  atiRequest: AtiRequest;
+}
+
+export interface OrderInCouncil {
+  id: number;
+  pcNumber: string;
+  approvalDate: string | null;
+  department: string;
+  act: string;
+  title: string;
+  htmlUrl: string;
+  contentText: string;
+  scrapedAt: string;
+}
+
+export interface OrderInCouncilAlertMatch {
+  id: number;
+  alert: number;
+  phrase: string;
+  externalUserId: string;
+  source: 'order_in_council';
+  matchedText: string;
+  startPosition: number;
+  endPosition: number;
+  createdAt: string;
+  orderInCouncil: OrderInCouncil;
+}
+

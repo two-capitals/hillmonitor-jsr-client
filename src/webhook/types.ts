@@ -84,6 +84,24 @@ export interface OrderPaperQuestionProcessedData {
   question_ids: number[];
 }
 
+export interface ConsultationProcessedData {
+  records_processed: number;
+  matches_created: number;
+  consultation_ids: number[];
+}
+
+export interface AtiRequestProcessedData {
+  records_processed: number;
+  matches_created: number;
+  request_ids: number[];
+}
+
+export interface OrderInCouncilProcessedData {
+  records_processed: number;
+  matches_created: number;
+  order_in_council_ids: number[];
+}
+
 /**
  * Union type of all webhook event names.
  */
@@ -94,7 +112,10 @@ export type WebhookEventType =
   | 'cpac_video.processed'
   | 'social_post.processed'
   | 'bill.processed'
-  | 'order_paper_question.processed';
+  | 'order_paper_question.processed'
+  | 'consultation.processed'
+  | 'ati_request.processed'
+  | 'order_in_council.processed';
 
 /**
  * Webhook payload sent by the HillMonitor platform.
@@ -106,4 +127,7 @@ export type WebhookPayload =
   | { event: 'cpac_video.processed'; data: CpacVideoProcessedData }
   | { event: 'social_post.processed'; data: SocialPostProcessedData }
   | { event: 'bill.processed'; data: BillProcessedData }
-  | { event: 'order_paper_question.processed'; data: OrderPaperQuestionProcessedData };
+  | { event: 'order_paper_question.processed'; data: OrderPaperQuestionProcessedData }
+  | { event: 'consultation.processed'; data: ConsultationProcessedData }
+  | { event: 'ati_request.processed'; data: AtiRequestProcessedData }
+  | { event: 'order_in_council.processed'; data: OrderInCouncilProcessedData };

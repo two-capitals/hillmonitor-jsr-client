@@ -37,6 +37,9 @@ import type {
   GazetteProcessedData,
   GovtReleaseProcessedData,
   OrderPaperQuestionProcessedData,
+  ConsultationProcessedData,
+  AtiRequestProcessedData,
+  OrderInCouncilProcessedData,
   CpacVideoProcessedData,
   SocialPostProcessedData,
   BillProcessedData,
@@ -128,6 +131,21 @@ export interface WebhookConfig {
     data: OrderPaperQuestionProcessedData,
     context: WebhookContext,
   ) => Promise<void>;
+
+  onConsultationProcessed?: (
+    data: ConsultationProcessedData,
+    context: WebhookContext,
+  ) => Promise<void>;
+
+  onAtiRequestProcessed?: (
+    data: AtiRequestProcessedData,
+    context: WebhookContext,
+  ) => Promise<void>;
+
+  onOrderInCouncilProcessed?: (
+    data: OrderInCouncilProcessedData,
+    context: WebhookContext,
+  ) => Promise<void>;
 }
 
 /**
@@ -169,6 +187,9 @@ export function serveWebhook(config: WebhookConfig): void {
     onSocialPostProcessed,
     onBillProcessed,
     onOrderPaperQuestionProcessed,
+    onConsultationProcessed,
+    onAtiRequestProcessed,
+    onOrderInCouncilProcessed,
   } = config;
   const cors = config.cors ?? getDefaultCorsHandler();
   const secret = config.secret ?? Deno.env.get('HILLMONITOR_WEBHOOK_SECRET');
@@ -254,6 +275,21 @@ export function serveWebhook(config: WebhookConfig): void {
         case 'order_paper_question.processed':
           if (onOrderPaperQuestionProcessed) {
             await onOrderPaperQuestionProcessed(payload.data, ctx);
+          }
+          break;
+        case 'consultation.processed':
+          if (onConsultationProcessed) {
+            await onConsultationProcessed(payload.data, ctx);
+          }
+          break;
+        case 'ati_request.processed':
+          if (onAtiRequestProcessed) {
+            await onAtiRequestProcessed(payload.data, ctx);
+          }
+          break;
+        case 'order_in_council.processed':
+          if (onOrderInCouncilProcessed) {
+            await onOrderInCouncilProcessed(payload.data, ctx);
           }
           break;
         default:
