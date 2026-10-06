@@ -40,6 +40,7 @@ import type {
   ConsultationProcessedData,
   AtiRequestProcessedData,
   OrderInCouncilProcessedData,
+  CommitteeReportProcessedData,
   CpacVideoProcessedData,
   SocialPostProcessedData,
   BillProcessedData,
@@ -146,6 +147,11 @@ export interface WebhookConfig {
     data: OrderInCouncilProcessedData,
     context: WebhookContext,
   ) => Promise<void>;
+
+  onCommitteeReportProcessed?: (
+    data: CommitteeReportProcessedData,
+    context: WebhookContext,
+  ) => Promise<void>;
 }
 
 /**
@@ -190,6 +196,7 @@ export function serveWebhook(config: WebhookConfig): void {
     onConsultationProcessed,
     onAtiRequestProcessed,
     onOrderInCouncilProcessed,
+    onCommitteeReportProcessed,
   } = config;
   const cors = config.cors ?? getDefaultCorsHandler();
   const secret = config.secret ?? Deno.env.get('HILLMONITOR_WEBHOOK_SECRET');
@@ -290,6 +297,11 @@ export function serveWebhook(config: WebhookConfig): void {
         case 'order_in_council.processed':
           if (onOrderInCouncilProcessed) {
             await onOrderInCouncilProcessed(payload.data, ctx);
+          }
+          break;
+        case 'committee_report.processed':
+          if (onCommitteeReportProcessed) {
+            await onCommitteeReportProcessed(payload.data, ctx);
           }
           break;
         default:

@@ -102,6 +102,12 @@ export interface OrderInCouncilProcessedData {
   order_in_council_ids: number[];
 }
 
+export interface CommitteeReportProcessedData {
+  records_processed: number;
+  matches_created: number;
+  committee_report_ids: number[];
+}
+
 /**
  * Union type of all webhook event names.
  */
@@ -115,7 +121,8 @@ export type WebhookEventType =
   | 'order_paper_question.processed'
   | 'consultation.processed'
   | 'ati_request.processed'
-  | 'order_in_council.processed';
+  | 'order_in_council.processed'
+  | 'committee_report.processed';
 
 /**
  * Webhook payload sent by the HillMonitor platform.
@@ -130,4 +137,5 @@ export type WebhookPayload =
   | { event: 'order_paper_question.processed'; data: OrderPaperQuestionProcessedData }
   | { event: 'consultation.processed'; data: ConsultationProcessedData }
   | { event: 'ati_request.processed'; data: AtiRequestProcessedData }
-  | { event: 'order_in_council.processed'; data: OrderInCouncilProcessedData };
+  | { event: 'order_in_council.processed'; data: OrderInCouncilProcessedData }
+  | { event: 'committee_report.processed'; data: CommitteeReportProcessedData };

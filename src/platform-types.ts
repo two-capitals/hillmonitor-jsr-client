@@ -578,3 +578,32 @@ export interface OrderInCouncilAlertMatch {
   orderInCouncil: OrderInCouncil;
 }
 
+export interface CommitteeReport {
+  id: number;
+  viewerPath: string;
+  committee: string;
+  reportNumber: number;
+  title: string;
+  kind: string;
+  parliament: number;
+  session: number;
+  presentedOn: string | null;
+  documentUrl: string;
+  contentText?: string;
+}
+
+export interface CommitteeReportAlertMatch {
+  id: number;
+  alert: number;
+  phrase: string;
+  externalUserId: string;
+  source: 'committee_report';
+  matchedText: string;
+  startPosition: number;
+  endPosition: number;
+  createdAt: string;
+  excerpt: string;
+  chapterUrl: string;
+  committeeReport: CommitteeReport;
+}
+

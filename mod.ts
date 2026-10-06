@@ -68,6 +68,8 @@ export type {
   AtiRequestAlertMatch,
   OrderInCouncil,
   OrderInCouncilAlertMatch,
+  CommitteeReport,
+  CommitteeReportAlertMatch,
 } from './src/platform-types.ts';
 
 // Auth types and functions
@@ -101,6 +103,8 @@ export {
   getAtiRequestAlertMatches,
   getOrderInCouncil,
   getOrderInCouncilAlertMatches,
+  getCommitteeReport,
+  getCommitteeReportAlertMatches,
   isPlatformConfigured,
 } from './src/platform-client.ts';
 
@@ -139,6 +143,7 @@ export type {
   ConsultationProcessedData,
   AtiRequestProcessedData,
   OrderInCouncilProcessedData,
+  CommitteeReportProcessedData,
   WebhookEventType,
 } from './src/webhook/types.ts';
 

@@ -47,6 +47,8 @@ import type {
   AtiRequestAlertMatch,
   OrderInCouncil,
   OrderInCouncilAlertMatch,
+  CommitteeReport,
+  CommitteeReportAlertMatch,
 } from './platform-types.ts';
 
 const REQUEST_TIMEOUT_MS = 30000;
@@ -149,6 +151,18 @@ export async function platformRequest<T = unknown>(
   const { path, method, params = {}, body, userId } = options;
   const filterByUser = shouldFilterByUser();
 
+  // DRF pagination `next` is an absolute URL. Strip the origin so we do not
+  // produce https://api.hillmonitor.cahttps://api.hillmonitor.ca/...
+  let requestPath = path;
+  if (/^https?:\/\//i.test(path)) {
+    try {
+      const parsed = new URL(path);
+      requestPath = `${parsed.pathname}${parsed.search}`;
+    } catch {
+      // keep path
+    }
+  }
+
   // Build query string
   const searchParams = new URLSearchParams();
 
@@ -165,8 +179,9 @@ export async function platformRequest<T = unknown>(
   }
 
   const queryString = searchParams.toString();
-  const fullPath = queryString ? `${path}?${queryString}` : path;
-  const url = `${HILLMONITOR_API_URL}${fullPath}`;
+  const separator = requestPath.includes('?') ? '&' : '?';
+  const fullPath = queryString ? `${requestPath}${separator}${queryString}` : requestPath;
+  const url = `${HILLMONITOR_API_URL.replace(/\/$/, '')}${fullPath.startsWith('/') ? fullPath : `/${fullPath}`}`;
 
   // Prepare request body with user ID for mutations (only if filtering by user)
   let requestBody = body;
@@ -514,4 +529,16 @@ export function getOrderInCouncilAlertMatches(
   oicId: number
 ): Promise<PlatformResponse<OrderInCouncilAlertMatch[]>> {
   return organizationGet(`/api/v1/orders-in-council/${oicId}/alert-matches/`);
+}
+
+export function getCommitteeReport(
+  reportId: number
+): Promise<PlatformResponse<CommitteeReport>> {
+  return organizationGet(`/api/v1/committee-reports/${reportId}/`);
+}
+
+export function getCommitteeReportAlertMatches(
+  reportId: number
+): Promise<PlatformResponse<CommitteeReportAlertMatch[]>> {
+  return organizationGet(`/api/v1/committee-reports/${reportId}/alert-matches/`);
 }
